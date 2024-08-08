@@ -14,27 +14,30 @@ const getAllRawDatas = asyncHandler(async (req, res) => {
 // 새 데이터 추가하기
 const createRawData = asyncHandler(async (req, res) => {
     console.log(req.body);
-    const { name, sensors } = req.body;
-    if (!name || !sensors) {
-      return res.status(400).json({
-        error: 'Invalid request',
-        message: !name ? 'Name is required' : 'Sensors are required',
-        received: req.body
-    });
+    const dataArray = req.body;
+
+    // Validate each item in the array
+    for (let item of dataArray) {
+      const { id, name, sensors } = item;
+      if (!name || !sensors) {
+        return res.status(400).json({
+          error: 'Invalid request',
+          message: !name ? 'Name is required' : 'Sensors are required',
+          received: item
+        });
+      }
+
+      try{
+        await RawData.create({ name, sensors });
+      }catch (err) {
+        console.log(err);
+        res.status(500).json({ error: 'Internal Server Error', details: err.message });
+      }
     }
-    
-    try{
-      const rawData = await RawData.create({
-        name,
-        sensors
-      });
-    }catch(err){
-      console.log(err);
-    }
-    
-  
-    res.status(201).send("Create Contacts");
-  });
+
+    res.status(201).send("Create RawData");
+  }
+);
 
 module.exports = {
     getAllRawDatas,
