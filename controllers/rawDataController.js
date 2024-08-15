@@ -7,6 +7,11 @@ const RawData = require("../models/rawDataModel");
 const getAllRawDatas = asyncHandler(async (req, res) => {
     const rawData = await RawData.find();
     res.status(200).send(rawData);
+
+    const userId = req.user.userId;
+    // userId를 사용하여 작업 수행
+    console.log('User ID:', userId);
+    //res.json({ message: 'Action completed successfully', userId });
 });
 
 // @desc Create a rawdatas
